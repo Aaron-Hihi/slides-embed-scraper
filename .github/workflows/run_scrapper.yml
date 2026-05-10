@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Updated to v4
 
       - name: Install System Tools
         run: |
@@ -24,7 +24,7 @@ jobs:
           sudo apt-get install -y tesseract-ocr chromium-browser
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5 # Updated to v5
         with:
           python-version: '3.12'
 
@@ -37,8 +37,9 @@ jobs:
           PDF_NAME: ${{ github.event.inputs.pdf_filename }}
         run: python export_slides.py
 
+      # This is the specific part that caused your error
       - name: Upload PDF
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # Changed from v3 to v4
         with:
           name: ${{ github.event.inputs.pdf_filename }}
           path: "*.pdf"
