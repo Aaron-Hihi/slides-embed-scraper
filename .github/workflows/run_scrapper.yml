@@ -1,0 +1,44 @@
+name: Run Slide Scraper
+
+on:
+  workflow_dispatch:
+    inputs:
+      slide_url:
+        description: 'Google Slides Published URL'
+        required: true
+      pdf_filename:
+        description: 'Output Filename (without .pdf)'
+        required: true
+        default: 'MySlides'
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install System Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr chromium-browser
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install Libraries
+        run: pip install -r requirements.txt
+
+      - name: Run Scraper
+        env:
+          SLIDE_URL: ${{ github.event.inputs.slide_url }}
+          PDF_NAME: ${{ github.event.inputs.pdf_filename }}
+        run: python export_slides.py
+
+      - name: Upload PDF
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.inputs.pdf_filename }}
+          path: "*.pdf"
